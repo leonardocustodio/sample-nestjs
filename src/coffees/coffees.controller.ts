@@ -19,7 +19,10 @@ import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
 import { REQUEST } from '@nestjs/core';
 import { Public } from '../common/decorators/public.decorator';
 import { ParseIntPipe } from '../common/pipes/parse-int.pipe';
+import { Protocol } from '../common/decorators/protocol.decorator';
+import { ApiForbiddenResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('coffees')
 @Controller('coffees')
 export class CoffeesController {
   constructor(
@@ -27,10 +30,16 @@ export class CoffeesController {
   ) {}
 
   // @SetMetadata('isPublic', true)
+  // @ApiResponse({ status: 403, description: 'Forbidden. '})
+  @ApiForbiddenResponse({ description: 'Forbidden.' })
   @Public()
   @Get()
-  async findAll(@Query() paginationQuery: PaginationQueryDto) {
+  async findAll(
+    @Protocol('https') protocol: string,
+    @Query() paginationQuery: PaginationQueryDto,
+  ) {
     // await new Promise((resolve) => setTimeout(resolve, 5000)); // Test timeout interceptor
+    console.log(protocol);
     return this.coffeesService.findAll(paginationQuery);
   }
 
